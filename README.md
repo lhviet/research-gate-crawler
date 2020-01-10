@@ -24,22 +24,21 @@ search_type = 'publication'
 # Type of publication we need to search is Article, not Conference Paper, Posters, or Others...
 publication_type = 'article'
 
+# From experiments, the max items we can crawl for each request is 300
 limit = 300
 ```
+
 #### Notice: 
-- From my test, request around 300 items in each request is reasonable. Increase the number to 400 may return errors.
-- Besides, there is Request time-rate limitation. Keep sending crawling requests in short time may trigger API server to block your IP.
-To avoid that case, a break time of 60-second between two requests is added `time.sleep(60)`.
+- From our tests, limitation for crawling is 300 items in each request.
+- Besides, there is Request time-rate limitation. By adding `cookies`, we can bypass this kind of error.
 
 ### Launch the crawler
 
 ```sh
 $ python crawler.py
-Fetching 0...
-https://www.researchgate.net/search.SearchBox.loadMore.html?type=publication&subfilter%5BpublicationType%5D=article&query=drone%20uav%20remote-sensing%20%22remote%20sensing%22&offset=0&limit=10
-Retrieved paper = 1
-Retrieved paper = 2
-Retrieved paper = 3
+Fetching 300/178863 (0%)
+https://www.researchgate.net/search.SearchBox.loadMore.html?query=drone+uav+remote-sensing+%22remote+sensing%22&type=publication&subfilter%5BpublicationType%5D=article&offset=300&limit=300
+retrieved (192) & ignored (108)
 ...
 ```
 
@@ -54,6 +53,13 @@ Ex.,
 - `ResearchGate-2007-2020-01-06.csv`
 - `ResearchGate-2008-2020-01-06.csv`
 - ...
+
+## Data Collection (How-to)
+- The crawled data was taken on Jan 10, 2020 (2020-Jan-10.zip)
+- The results are 21 CSV files for keywords `drone uav remote-sensing "remote sensing"`. Each CSV is for one year, from 2000 to 2020.
+- There are `178968` articles in total
+- There are `131180 (73.3%)` articles collected and placed into their appropriate CSV
+- And, `47788 (26.7%)` articles were ignored because of un-matched criteria (from year 2000 and must have the abstract)
 
 ### Technology
 The Crawler uses [requests](https://pypi.org/project/requests/) library to send a `GET` query to get the needed information returned in JSON format.
